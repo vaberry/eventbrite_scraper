@@ -2,6 +2,7 @@ from bs4 import BeautifulSoup
 import requests
 import re
 import os
+import pinecone
 
 city_dict = {
     'chicago': 'il--chicago',
@@ -33,3 +34,12 @@ def make_event_txt(driver, event):
         f.write(f'Event Link: {event_link}\n')
         f.write(f'Event ID: {event_id}\n')
         f.write(f'Event Description: {event_description}')
+
+def start_pinecone():
+    OPENAI_API_KEY=os.getenv("OPENAI_API_KEY")
+    PINECONE_API_KEY = os.getenv("PINECONE_API_KEY")
+    PINECONE_ENV = os.getenv("PINECONE_ENV")
+    pinecone.init(
+        api_key=PINECONE_API_KEY,
+        environment=PINECONE_ENV
+    )
