@@ -2,10 +2,13 @@ from langchain.text_splitter import CharacterTextSplitter
 from langchain.embeddings.openai import OpenAIEmbeddings
 from langchain.vectorstores import Pinecone
 from selenium import webdriver
+from dotenv import load_dotenv
 from bs4 import BeautifulSoup
 import pinecone
 import re
 import os
+
+load_dotenv()
 
 city_dict = {
     'chicago': 'il--chicago',
