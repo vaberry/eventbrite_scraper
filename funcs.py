@@ -28,7 +28,7 @@ def make_event_txt(driver, event):
     driver.implicitly_wait(10)
     event_soup = BeautifulSoup(driver.page_source, 'html.parser')
     event_description = str(event_soup.find('div', class_='eds-text--left').text)
-    with open(f'./events/{str(event_id)}.html', 'w') as f:
+    with open(f'./events/{str(event_id)}.txt', 'w') as f:
         f.write(f'Event Name: {event_name}\n')
         f.write(f'Event Link: {event_link}\n')
         f.write(f'Event ID: {event_id}\n')
@@ -70,7 +70,6 @@ def load_vectors():
                 index = pinecone.Index("events-index")
                 embeddings = OpenAIEmbeddings()
                 vectorstore = Pinecone(index, embeddings.embed_query, "text")
-                vectorstore.add_documents(texts)
-                print('vectored')
+                vectorstore.add_documents(texts, ids=[file[:-4]])
             except Exception as e:
                 print(e)
