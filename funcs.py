@@ -55,7 +55,7 @@ def load_vectors():
         api_key=PINECONE_API_KEY,
         environment=PINECONE_ENV
     )
-    for file in os.listdir('events')[0:11]:
+    for file in os.listdir('events'):
         with open(f'events/{file}') as f:
             try:
                 event = f.read()
