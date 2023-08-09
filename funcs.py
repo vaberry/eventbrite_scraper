@@ -29,10 +29,10 @@ def make_event_txt(driver, event):
     event_soup = BeautifulSoup(driver.page_source, 'html.parser')
     event_description = str(event_soup.find('div', class_='eds-text--left').text)
     with open(f'./events/{str(event_id)}.txt', 'w') as f:
-        f.write(f'Event Name: {event_name}\n')
-        f.write(f'Event Link: {event_link}\n')
-        f.write(f'Event ID: {event_id}\n')
-        f.write(f'Event Description: {event_description}')
+        # f.write(f'Event Name: {event_name}\n')
+        # f.write(f'Event Link: {event_link}\n')
+        # f.write(f'Event ID: {event_id}\n')
+        f.write(f'{event_description}')
 
 def scrape_events():
     driver = webdriver.Chrome()
@@ -85,8 +85,9 @@ def load_vectors():
 def get_qa():
     start_pinecone()
     docsearch = Pinecone.from_existing_index("events-index", embedding=OpenAIEmbeddings())
-    extractive = docsearch.similarity_search("I want to do something that doesn't involve alcohol", k=3)
-    for i in extractive:
+    matched_docs = docsearch.similarity_search("i love taylor swift", k=3)
+    for i in matched_docs:
         print(i.metadata)
+        print(i.page_content)
         print('\n')
         print('\n')
