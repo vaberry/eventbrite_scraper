@@ -50,7 +50,7 @@ def scrape_events():
                 break
     driver.quit()
 
-def load_vectors():
+def start_pinecone():
     OPENAI_API_KEY=os.getenv("OPENAI_API_KEY")
     PINECONE_API_KEY = os.getenv("PINECONE_API_KEY")
     PINECONE_ENV = os.getenv("PINECONE_ENV")
@@ -58,6 +58,14 @@ def load_vectors():
         api_key=PINECONE_API_KEY,
         environment=PINECONE_ENV
     )
+
+def clear_vectorstore():
+    start_pinecone()
+    index = pinecone.Index("events-index")
+    index.delete(delete_all=True)
+
+def load_vectors():
+    start_pinecone()
     for file in os.listdir('events'):
         with open(f'events/{file}') as f:
             try:
@@ -66,10 +74,19 @@ def load_vectors():
                     separator = "\n\n",
                     length_function = len,
                 )
-                texts = text_splitter.create_documents([event])
+                texts = text_splitter.create_documents([event], metadatas=[{'event-id': file.split('.')[0]}])
                 index = pinecone.Index("events-index")
                 embeddings = OpenAIEmbeddings()
                 vectorstore = Pinecone(index, embeddings.embed_query, "text")
-                vectorstore.add_documents(texts, ids=[file[:-4]])
+                vectorstore.add_documents(texts)
             except Exception as e:
                 print(e)
+
+def get_qa():
+    start_pinecone()
+    docsearch = Pinecone.from_existing_index("events-index", embedding=OpenAIEmbeddings())
+    extractive = docsearch.similarity_search("I want to do something that doesn't involve alcohol", k=3)
+    for i in extractive:
+        print(i.metadata)
+        print('\n')
+        print('\n')
